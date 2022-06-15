@@ -855,7 +855,6 @@ __get_releases_in_store() {
       _registry="index.docker.io"
     fi
     if [ -n "$DOCKER_REGISTRY_TOKEN" ]; then
-      echo "DOCKER_REGISTRY_TOKEN is set, using it to authenticate to the registry"
       _out="$(curl --fail --silent -H "Authorization: Bearer $DOCKER_REGISTRY_TOKEN" "https://${_registry}/v2/${_name}/${_image}/tags/list")"
     else
       _out="$(curl --fail --silent "https://${_registry}/v2/${_name}/${_image}/tags/list")"
@@ -869,11 +868,10 @@ __get_releases_in_store() {
       exit 2
     else
       local _image_info _tag _created_at
-      echo "$_out"
       for _image_info in $(echo "$_out" | grep -oe '{[^}]\+\"tag\"\s*:\s*\[[^}]\+'); do
         _tag="$(echo "$_image_info" | grep -oe '\"tag\"\s*:\s*\[[^]]\+' | cut -f2 -d "[" | grep -oe '"[^"]\+"' | tr -d '"' | tr "\n" " ")"
         _created_at="$(echo "$_image_info" | grep -oe '\"timeCreatedMs\"\s*:\s*\"[^\"]\+\"' | cut -f2 -d ":" | grep -oe '"[^"]\+"' | tr -d '"')"
-        echo "$_created_at"
+        echo "$_tag - $_created_at"
         if [ -n "$_tag" ]; then
           echo "$_created_at $_tag"
         fi
