@@ -301,7 +301,7 @@ __remote() {
   # COMBAK: this is a newly introduced variable to turn of piping by default.
   # as in some of the patches it tries to pipe commands that should not be piped.
   # (Lorenzo ~ 2025-01-21)
-  if [ -n $USE_PIPE ]; then
+  if [ -n "$USE_PIPE" ]; then
     if [ -t 0 ]; then
       local _in_a_pipe="false"
     else
