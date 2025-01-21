@@ -84,7 +84,7 @@ authorize_release_store_on_build_host() {
     local _release_store_host=${RELEASE_STORE%:*}
     _release_store_host=${_release_store_host#*@}
     if [ "$BUILD_HOST" = "docker" ]; then
-      status "Authorizing release store on localhost"
+      status "Authorizing release store ($_release_store_host) on localhost"
       __sync_local "
           set -e
           if [[ \$(ssh-keygen -F \"$_release_store_host\" | grep -c found) = 0 ]]; then
@@ -139,7 +139,7 @@ init_app_remotely() {
     local _remote_url
     if [ "$BUILD_HOST" = "docker" ]; then
       _remote_url="file://$DOCKER_BUILD_DIR"
-    else 
+    else
       _remote_url="$_host:$DELIVER_TO"
     fi
     if [[ ! "$git_remote" =~ "$_host $_remote_url" ]]; then
@@ -153,7 +153,7 @@ init_app_remotely() {
       && git init --quiet \
       && git config receive.denyCurrentBranch ignore
     ) || error "Failed to initialize local git repository which will be mounted into the build container"
-  else 
+  else
     __sync_remote "
       current_shell=\"\$0\" || :
       [ -z \"\$current_shell\" ] && current_shell=\"\$SHELL\"

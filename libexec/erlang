@@ -1283,9 +1283,12 @@ remote_extract_release_archive() {
       sed -i \"s/{{edeliver-app}}/${APP}/g\" \"$APP\"
     " || error "Failed to install remote start script!"
   else
-    status "Extracting archive ${_archive} into ${_archive_dir}"
     # when building releases with mix, the tar does not contain the app name as subdirectory
-    [[ "$RELEASE_CMD" = "mix" ]] && _archive_dir="${_archive_dir%%/}/${APP}"
+    # except for umbrella projects then it will sort the same structure as distillery
+    [[ "$RELEASE_CMD" = "mix" ]] && [[ ! "$_archive_dir" =~ .*/${APP}$ ]] && _archive_dir="${_archive_dir%%/}/${APP}"
+
+    status "Extracting archive ${_archive} into ${_archive_dir}"
+
     __remote "
       [ -f $PROFILE ] && source $PROFILE
       set -e
