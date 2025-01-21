@@ -1228,10 +1228,8 @@ remote_extract_release_archive() {
   local _release_version=${1:-"$VERSION"}
   local _archive_dir=${2:-"$DELIVER_TO"}
   local _archive="${APP}_${_release_version}.tar.gz"
-
   __exec_if_defined "pre_extract_release_archive"
   __detect_release_store_type
-
   if [ "$RELEASE_STORE_TYPE" = "docker" ]; then
     _archive_dir="${_archive_dir}/${APP}/bin"
     local _image_name="${DOCKER_RUN_IMAGE}:${_release_version}" _release_command="$RELEASE_CMD"
@@ -1299,10 +1297,9 @@ remote_extract_release_archive() {
     __remote "
       [ -f $PROFILE ] && source $PROFILE
       set -e
-      cd ${_archive_dir}
-      tar -xzvf ${_archive} && rm ${_archive}"
+      cd ${_archive_dir} $SILENCE
+      tar -xzvf ${_archive} $SILENCE && rm ${_archive} $SILENCE"
   fi
-
   __exec_if_defined "post_extract_release_archive"
 }
 
