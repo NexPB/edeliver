@@ -1157,6 +1157,7 @@ __get_node_command() {
     fi
 
     [[ "${_node_command}" = start* ]] && local _is_start_command="true" || :
+    [[ "${_node_command}" = daemon* ]] && local _is_start_command="true" || :
     [[ "${_node_command}" = restart* ]] && local _is_restart_command="true" || :
 
     echo "

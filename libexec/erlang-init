@@ -506,7 +506,7 @@ case "${MODE}" in
 esac
 
 case "${COMMAND}" in
-  (deamon|daemon_iex)
+  (daemon|daemon_iex)
     error "Blocked command: ${COMMAND}.\n"
   ;;
   (ping|migrate|migrations)
