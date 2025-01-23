@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+if [[ "$RELEASE_CMD" = "distillery" ]] || [[ "$USING_DISTILLERY" = "true" ]]; then
+  error "Distillery releases are not supported in this version of Edeliver."
+fi
+
 __version() {
   echo -e "\n${txtbld}edeliver v$DELIVER_VERSION${txtrst} | $HOMEPAGE\n"
 }
@@ -501,9 +505,13 @@ case "${MODE}" in
   ;;
 esac
 
-
-
 case "${COMMAND}" in
+  (deamon|daemon_iex)
+    error "Blocked command: ${COMMAND}.\n"
+  ;;
+  (ping|migrate|migrations)
+    error "Unsupported command: ${COMMAND}.\n"
+  ;;
   (build)
     STRATEGY="erlang-${COMMAND}-${COMMAND_INFO}"
     if [[ ! ${COMMAND_INFO} = "release" ]] && [[ "$PRINT_COMMAND_HELP" != "true" ]] && [[ -z "$FROM" ]] && [[ -z "$WITH" ]]; then
@@ -513,7 +521,7 @@ case "${COMMAND}" in
   (deploy)
     STRATEGY="erlang-deploy-${COMMAND_INFO}"
   ;;
-  (start|stop|restart|ping|version|migrate|migrations)
+  (start|stop|restart|version)
     STRATEGY="erlang-node-execute"
     NODE_ACTION="${COMMAND}"
   ;;
