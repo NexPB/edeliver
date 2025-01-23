@@ -1140,10 +1140,16 @@ remote_clean_release_dir() {
 }
 
 __get_node_command() {
+  if [[ "$RELEASE_CMD" = "distillery" ]] || [[ "$USING_DISTILLERY" = "true" ]]; then
+    error "Distillery releases are not supported in this version of Edeliver."
+    exit 2
+  fi
+
   local _node_command="$1"
   local _app_path="$2"
   local _config_arg="$3"
   local _rpc_command="rpc"
+
   if declare -F "get_${_node_command}_node_command" > /dev/null; then
     eval "get_${_node_command}_node_command $@"
   else
@@ -1154,13 +1160,25 @@ __get_node_command() {
       local _rpc_open_brackets="[["
       local _rpc_close_brackets="]]"
     fi
+
     [[ "${_node_command}" = start* ]] && local _is_start_command="true" || :
     [[ "${_node_command}" = restart* ]] && local _is_restart_command="true" || :
+
+    case "${_node_command}" in
+      (deamon|daemon_iex)
+        error_message "Blocked command: ${_node_command}.\n"; exit 2
+      ;;
+      (ping|migrate|migrations)
+        error_message "Unsupported command: ${_node_command}.\n"; exit 2
+      (*)
+      ;;
+    esac
+
     echo "
       [ -f \"$PROFILE\" ] && . \"$PROFILE\"
       set -e
       cd ${_app_path}/${APP} $SILENCE
-      output_lines=\"\$(bin/${APP} ping | wc -l | tr -d ' ')\"
+      output_lines=\"\$(bin/${APP}/ping | wc -l | tr -d ' ')\"
       if [ \"\$output_lines\" -gt 1 ]; then
         output_filter_command='tail'
         output_filter_command_options=\"-n+\$output_lines\"
@@ -1199,13 +1217,9 @@ __get_node_command() {
           fi
         fi
 
-        if [ \"$RELEASE_CMD\" = \"mix\" ]; then
-          __edeliver_synchronous_start
-        else
-          ${_node_env}bin/${APP} start ${_config_arg} > >(\$output_filter_command \$output_filter_command_options)
-        fi
-      else # no restart command
-        echo "Unsupported node command" > >(\$output_filter_command \$output_filter_command_options)
+        __edeliver_synchronous_start
+      else
+        ${_node_env}bin/${APP} ${_node_command} ${_config_arg} > >(\$output_filter_command \$output_filter_command_options)
       fi
     "
   fi
