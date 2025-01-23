@@ -1169,10 +1169,10 @@ __get_node_command() {
         output_filter_command_options=''
       fi
       __edeliver_node_running() {
-        bin/${APP} ping 2>/dev/null >/dev/null
+        bin/${APP}/ping 2>/dev/null >/dev/null
       }
       __edeliver_synchronous_start() {
-        bin/${APP} start | \$output_filter_command \$output_filter_command_options
+        bin/${APP}/start | \$output_filter_command \$output_filter_command_options
         sleep 1
         for i in 1 2 3 4 5 6 7 8 9 10; do
           __edeliver_node_running && break || :
@@ -1181,7 +1181,7 @@ __get_node_command() {
         bin/${APP} ${_rpc_command} 'Elixir.Edeliver.run_command(${_rpc_open_brackets}:monitor_startup_progress, \"$APP\", :$MODE${_rpc_close_brackets})' | \$output_filter_command \$output_filter_command_options | grep -e 'Started\\|^ok' || :
       }
       if [ \"$RELEASE_CMD\" = \"mix\" ] && [ \"$_is_start_command\" = \"true\" ]; then
-        ping_result=\"\$(bin/${APP} ping | \$output_filter_command \$output_filter_command_options || :)\"
+        ping_result=\"\$(bin/${APP}/ping | \$output_filter_command \$output_filter_command_options || :)\"
         if __edeliver_node_running; then
           echo \"${txtred}already running${txtrst}\" && exit 1
         else
@@ -1192,19 +1192,20 @@ __get_node_command() {
         # not just restart the applications but also the erlang vm
         # with the most recent release
         if __edeliver_node_running; then
-          STOP_OUTPUT=\"\$(${_node_env}bin/${APP} stop ${_config_arg} | \$output_filter_command \$output_filter_command_options)\"
+          STOP_OUTPUT=\"\$(${_node_env}bin/${APP}/stop ${_config_arg} | \$output_filter_command \$output_filter_command_options)\"
           if [ \"\$?\" -ne 0 ]; then
             cat \"\$STOP_OUTPUT\"
             exit 1
           fi
         fi
+
         if [ \"$RELEASE_CMD\" = \"mix\" ]; then
           __edeliver_synchronous_start
         else
           ${_node_env}bin/${APP} start ${_config_arg} > >(\$output_filter_command \$output_filter_command_options)
         fi
       else # no restart command
-        ${_node_env}bin/${APP} ${_node_command} ${_config_arg} > >(\$output_filter_command \$output_filter_command_options)
+        echo "Unsupported node command" > >(\$output_filter_command \$output_filter_command_options)
       fi
     "
   fi

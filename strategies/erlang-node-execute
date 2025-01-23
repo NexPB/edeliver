@@ -61,12 +61,6 @@ ${bldylw}Info:${txtrst} Shows the pending migration on the deploy host(s).
 }
 
 run() {
-  error "Executing node commands is deprecated. Please use local bin commands instead."
-}
-
-# Disable the commands because when using `mix release` build tool then a lot of the commands
-# are not supported anymore. Instead we're using local bin commands in the project repository.
-run_deprecated() {
   [[ "$NODE_ACTION" = version ]] && status "getting release versions from $NODE_ENVIRONMENT servers" || status "${NODE_ACTION}ing $NODE_ENVIRONMENT servers"
   authorize_hosts
   local _rpc_command="rpc"
@@ -82,17 +76,10 @@ run_deprecated() {
     NODE_ACTION="${_rpc_command} 'Elixir.Edeliver.run_command(${_rpc_open_brackets}:release_version,\"$APP\"${_rpc_close_brackets})' | tr -d \\\""
   elif [[ "$NODE_ACTION" = ping ]] && [[ "$RELEASE_CMD" = "mix" ]]; then
     NODE_ACTION="ping"
-  elif [[ "$NODE_ACTION" = migrations ]] && [[ "$RELEASE_CMD" = "mix" ]]; then
-    NODE_ACTION="${_rpc_command} 'Elixir.Edeliver.run_command(${_rpc_open_brackets}:list_pending_migrations,\"$APP\",\"$ECTO_REPOSITORY\"${_rpc_close_brackets})'"
-  elif [[ "$NODE_ACTION" = migrations ]] && [[ "$RELEASE_CMD" != "mix" ]]; then
-    error "Showing migrations is only supported when using mix as release command."
-  elif [[ "$NODE_ACTION" = migrate ]] && [[ "$RELEASE_CMD" = "mix" ]]; then
-    local __up_or_down="up"
-    for arg in $ARGS; do [[ "$arg" = "down" ]] && local __up_or_down="down"; done
-    [[ -n "$VERSION" ]] && local __to_version=",\"$VERSION\"" || local __to_version=""
-    NODE_ACTION="${_rpc_command} 'Elixir.Edeliver.run_command(${_rpc_open_brackets}:migrate,\"$APP\",\"$ECTO_REPOSITORY\",:${__up_or_down}${__to_version}${_rpc_close_brackets})'"
-  elif [[ "$NODE_ACTION" = migrate ]] && [[ "$RELEASE_CMD" != "mix" ]]; then
-    error "Executing migrations is only supported when using mix as release command."
+  elif [[ "$NODE_ACTION" = migrations ]]; then
+    error "Showing migrations is not supported on this Edeliver version."
+  elif [[ "$NODE_ACTION" = migrate ]]; then
+    error "Executing migrations is not supported on this Edeliver version."
   elif [[ "$RELEASE_CMD" = "mix" ]]; then
     NODE_ACTION="$NODE_ACTION"
   fi
