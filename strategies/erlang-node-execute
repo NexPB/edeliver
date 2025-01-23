@@ -61,6 +61,12 @@ ${bldylw}Info:${txtrst} Shows the pending migration on the deploy host(s).
 }
 
 run() {
+  error "Executing node commands is deprecated. Please use local bin commands instead."
+}
+
+# Disable the commands because when using `mix release` build tool then a lot of the commands
+# are not supported anymore. Instead we're using local bin commands in the project repository.
+run_deprecated() {
   [[ "$NODE_ACTION" = version ]] && status "getting release versions from $NODE_ENVIRONMENT servers" || status "${NODE_ACTION}ing $NODE_ENVIRONMENT servers"
   authorize_hosts
   local _rpc_command="rpc"
