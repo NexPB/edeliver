@@ -43,5 +43,7 @@ run() {
   fi
   [[ "$CLEAN_DEPLOY" = "true" ]] && remote_clean_release_dir
   remote_extract_release_archive
-  [[ "$START_DEPLOY" = "true" ]] && force_start_release
+
+  # deprecated
+  # [[ "$START_DEPLOY" = "true" ]] && force_start_release
 }
