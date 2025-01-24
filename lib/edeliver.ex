@@ -60,10 +60,10 @@ defmodule Edeliver do
   end
 
   def run_command([command_name, application_name | arguments]) when is_atom(command_name) do
-    application_name = String.to_atom(application_name)
+    application_name = String.to_atom(application_name) |> IO.inspect(label: "application_name")
 
     application_version =
-      release_version(application_name, nil) ||
+      release_version(application_name) |> IO.inspect(label: "application_version") ||
         raise "No release version found for #{application_name}"
 
     apply(__MODULE__, command_name, [application_name, application_version | arguments])
@@ -101,7 +101,6 @@ defmodule Edeliver do
   @spec release_version(atom) :: String.t() | nil
   @spec release_version(atom, String.t() | nil) :: String.t() | nil
   def release_version(application_name, _application_version \\ nil) do
-    releases = :release_handler.which_releases()
     application_name = Atom.to_charlist(application_name)
 
     # Example of `releases`:
@@ -126,7 +125,7 @@ defmodule Edeliver do
     #     ~c"digital_token-1.0.0", ...], :permanent}
     # ]
 
-    releases
+    :release_handler.which_releases()
     |> Enum.find(fn {name, _version, _apps, status} ->
       if status in [:current, :permanent] do
         name == application_name
