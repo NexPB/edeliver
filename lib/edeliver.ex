@@ -98,24 +98,44 @@ defmodule Edeliver do
 
     which is either the `:current` version or the `:permanent` version.
   """
-  @spec release_version(application_name :: atom, application_version :: String.t()) :: String.t()
+  @spec release_version(atom) :: String.t() | nil
+  @spec release_version(atom, String.t() | nil) :: String.t() | nil
   def release_version(application_name, _application_version \\ nil) do
     releases = :release_handler.which_releases()
     application_name = Atom.to_charlist(application_name)
 
-    case for {name, version, _apps, status} <- releases,
-             status == :current and name == application_name,
-             do: to_string(version) do
-      [current_version] ->
-        current_version
+    # Example of `releases`:
+    # [
+    #   {~c"loyalty", ~c"2.59.0+f08833be",
+    #     [~c"elixir-1.14.5", ~c"mix-1.14.5", ~c"iex-1.14.5", ~c"sasl-4.1.2",
+    #     ~c"compiler-8.1.1.5", ~c"stdlib-3.17.2.4", ~c"runtime_tools-1.18",
+    #     ~c"admin_dashboard-2.59.0+f08833be", ~c"logger-1.14.5",
+    #     ~c"api-2.59.0+f08833be", ~c"shopify_integration-2.59.0+f08833be",
+    #     ~c"wx-2.1.4", ~c"observer-2.11.1", ~c"core-2.59.0+f08833be",
+    #     ~c"crypto-5.0.6.4", ~c"common-2.59.0+f08833be", ~c"jason-1.4.4",
+    #     ~c"appsignal-2.9.0", ~c"decimal-2.1.1", ~c"hackney-1.18.1",
+    #     ~c"asn1-5.0.18.2", ~c"public_key-1.12.0.2", ~c"ssl-10.7.3.9",
+    #     ~c"idna-6.1.1", ~c"unicode_util_compat-0.7.0", ~c"mimerl-1.3.0",
+    #     ~c"certifi-2.9.0", ~c"parse_trans-3.3.1", ~c"syntax_tools-2.6",
+    #     ~c"ssl_verify_fun-1.1.7", ~c"metrics-1.0.1", ~c"decorator-1.4.0",
+    #     ~c"telemetry-1.2.1", ~c"oban_pro-1.4.2", ~c"oban_web-2.10.2",
+    #     ~c"phoenix_html-3.3.3", ~c"phoenix_live_view-0.20.13", ~c"oban_met-0.1.4",
+    #     ~c"ex_cldr-2.40.1", ~c"inets-7.5.3.4", ~c"ex_unit-1.14.5",
+    #     ~c"cldr_utils-2.28.2", ~c"ex_cldr_calendars-1.26.2",
+    #     ~c"ex_cldr_numbers-2.33.3", ~c"ex_cldr_currencies-2.16.3",
+    #     ~c"digital_token-1.0.0", ...], :permanent}
+    # ]
 
-      _ ->
-        case for {name, version, _apps, status} <- releases,
-                 status == :permanent and name == application_name,
-                 do: to_string(version) do
-          [permanent_version] -> String.to_charlist(permanent_version)
-        end
-    end
+    releases
+    |> Enum.find(fn {name, _version, _apps, status} ->
+      if status in [:current, :permanent] do
+        name == application_name
+      end
+    end)
+    |> then(fn
+      {_name, version, _apps, _status} -> to_string(version)
+      _ -> nil
+    end)
   end
 
   @doc """
