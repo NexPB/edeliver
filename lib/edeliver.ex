@@ -62,10 +62,10 @@ defmodule Edeliver do
   def run_command([command_name, application_name | arguments]) when is_atom(command_name) do
     application_name = String.to_atom(application_name)
 
-    {^application_name, _description, application_version} =
-      :application.which_applications() |> List.keyfind(application_name, 0)
+    application_version =
+      release_version(application_name, nil) ||
+        raise "No release version found for #{application_name}"
 
-    application_version = to_string(application_version)
     apply(__MODULE__, command_name, [application_name, application_version | arguments])
   end
 
