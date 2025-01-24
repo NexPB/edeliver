@@ -63,17 +63,17 @@ ${bldylw}Info:${txtrst} Shows the pending migration on the deploy host(s).
 run() {
   [[ "$NODE_ACTION" = version ]] && status "getting release versions from $NODE_ENVIRONMENT servers" || status "${NODE_ACTION}ing $NODE_ENVIRONMENT servers"
   authorize_hosts
-  local _rpc_command="rpc"
-  if [[ "$USING_DISTILLERY" = "true" || "$RELEASE_CMD" = "mix" ]]; then
-    local _rpc_open_brackets="["
-    local _rpc_close_brackets="]"
-  else
-    local _rpc_open_brackets="[["
-    local _rpc_close_brackets="]]"
-  fi
+  # NOTE: it is seems to be always single brackets for rpc commands :thinking:
+  # if [[ "$USING_DISTILLERY" = "true" || "$RELEASE_CMD" = "mix" ]]; then
+  #   local _rpc_open_brackets="["
+  #   local _rpc_close_brackets="]"
+  # else
+  #   local _rpc_open_brackets="[["
+  #   local _rpc_close_brackets="]]"
+  # fi
 
   if [[ "$NODE_ACTION" = version ]] && [[ "$RELEASE_CMD" = "mix" ]]; then
-    NODE_ACTION="${_rpc_command} 'Elixir.Edeliver.run_command(${_rpc_open_brackets}:release_version,\"$APP\"${_rpc_close_brackets})' | tr -d \\\""
+    NODE_ACTION="rpc 'Elixir.Edeliver.run_command([:release_version, \"$APP\"])' | tr -d \\\""
   elif [[ "$NODE_ACTION" = ping ]] && [[ "$RELEASE_CMD" = "mix" ]]; then
     NODE_ACTION="ping"
   elif [[ "$NODE_ACTION" = migrations ]]; then
