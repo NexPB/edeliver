@@ -1,6 +1,20 @@
 eDeliver Versions
 =================
 
+__1.9.5__
+
+  - Enhancements
+    - Do not compile `Distillery` config when using mix as build tool
+  - Fixes
+    - Disable `in_a_pipe` for `__remote()` by default
+  - Other
+    - Hacky things for remote commands
+
+__1.9.4__
+
+  - Enhancements
+    - Unpacking releases when using umbrella projects with `mix` as build tool
+
 __1.9.3__
 
   - Enhancements
@@ -8,7 +22,7 @@ __1.9.3__
 
 __1.9.2__
 
-  - Fixes 
+  - Fixes
     - include missing default file to start release containers into hex package
     - list available releases on google container registry correctly
 
@@ -18,9 +32,9 @@ __1.9.1__
     - add `DOCKER_HUB_ACCESS_TOKEN` to list releases on Docker Hub
     - improve listing of releases from Docker registry
 
-  - Fixes 
+  - Fixes
     - creating release TAR when building in docker and with mix directly
-    - listing releases on Docker Hub 
+    - listing releases on Docker Hub
 
 __1.9.0__
 
@@ -31,7 +45,7 @@ __1.9.0__
     - run epmd-less in docker
     - rebar3 support
 
-  - Fixes 
+  - Fixes
     - consider env when fetching deps
     - consider DEPLOY_ENVIRONMENT when globally set
 
@@ -39,7 +53,7 @@ __1.8.0__
 
   - Backwards incompatible changes
     - Elixir 1.10 compatibility by @progsmile. This is minimum required version now.
-    
+
 __1.7.0__
 
   - Backwards incompatible changes

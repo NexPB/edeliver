@@ -2,7 +2,7 @@ defmodule Edeliver.Mixfile do
   use Mix.Project
 
   @source_url "https://github.com/boldpoker/edeliver"
-  @version "1.9.3"
+  @version "1.9.5"
 
   def project do
     [
@@ -27,7 +27,7 @@ defmodule Edeliver.Mixfile do
 
   defp deps do
     [
-      {:distillery, "~> 2.1.0", optional: true, warn_missing: false},
+      {:distillery, "~> 2.1.0", optional: true},
       {:meck, "~> 0.8.13", only: :test},
       {:ex_doc, ">= 0.28.4", only: :dev, runtime: false}
     ]
