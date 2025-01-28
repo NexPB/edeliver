@@ -61,9 +61,11 @@ ${bldylw}Info:${txtrst} Shows the pending migration on the deploy host(s).
 }
 
 run() {
-  [[ "$NODE_ACTION" = version ]] &&
+  if [[ "$NODE_ACTION" = version ]]; then
     status "getting release versions from $NODE_ENVIRONMENT servers"
-      || status "${NODE_ACTION}ing $NODE_ENVIRONMENT servers"
+  else
+    status "${NODE_ACTION}ing $NODE_ENVIRONMENT servers"
+  fi
 
   authorize_hosts
 
