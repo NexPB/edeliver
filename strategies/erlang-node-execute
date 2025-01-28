@@ -61,8 +61,12 @@ ${bldylw}Info:${txtrst} Shows the pending migration on the deploy host(s).
 }
 
 run() {
-  [[ "$NODE_ACTION" = version ]] && status "getting release versions from $NODE_ENVIRONMENT servers" || status "${NODE_ACTION}ing $NODE_ENVIRONMENT servers"
+  [[ "$NODE_ACTION" = version ]] &&
+    status "getting release versions from $NODE_ENVIRONMENT servers"
+      || status "${NODE_ACTION}ing $NODE_ENVIRONMENT servers"
+
   authorize_hosts
+
   # NOTE: it is seems to be always single brackets for rpc commands :thinking:
   # if [[ "$USING_DISTILLERY" = "true" || "$RELEASE_CMD" = "mix" ]]; then
   #   local _rpc_open_brackets="["
@@ -83,7 +87,9 @@ run() {
   elif [[ "$RELEASE_CMD" = "mix" ]]; then
     NODE_ACTION="$NODE_ACTION"
   fi
+
   __exec_if_defined execute_custom_node_command "$NODE_ACTION" || execute_node_command "$NODE_ACTION"
+
   [[ "$?" != 0 ]] && exit 1
 }
 
