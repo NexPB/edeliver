@@ -169,45 +169,52 @@ defmodule Edeliver do
   @doc """
     Prints the pending ecto migrations
   """
-  def list_pending_migrations(application_name, application_version, ecto_repository \\ ~c"") do
-    repository = ecto_repository!(application_name, ecto_repository)
-    migrator = Ecto.Migrator
-    versions = migrator.migrated_versions(repository)
+  if Code.loaded?(Ecto.Migrator) do
+    def list_pending_migrations(application_name, application_version, ecto_repository \\ ~c"") do
+      repository = ecto_repository!(application_name, ecto_repository)
+      migrator = Ecto.Migrator
+      versions = migrator.migrated_versions(repository)
 
-    pending_migrations =
-      migrations_for(migrations_dir(application_name, application_version))
-      |> Enum.filter(fn {version, _name, _file} -> version not in versions end)
-      |> Enum.reverse()
-      |> Enum.map(fn {version, name, _file} -> {version, name} end)
+      pending_migrations =
+        migrations_for(migrations_dir(application_name, application_version))
+        |> Enum.filter(fn {version, _name, _file} -> version not in versions end)
+        |> Enum.reverse()
+        |> Enum.map(fn {version, name, _file} -> {version, name} end)
 
-    pending_migrations
-    |> Enum.each(fn {version, name} ->
-      warning("pending: #{name} (#{version})")
-    end)
+      pending_migrations
+      |> Enum.each(fn {version, name} ->
+        warning("pending: #{name} (#{version})")
+      end)
+    end
+  else
+    def list_pending_migrations(application_name, application_version, _ecto_repository \\ ~c"") do
+      dir = migrations_for(migrations_dir(application_name, application_version))
+      warning("Ecto.Migrator is not loaded, migrations cannot be listed dir=#{inspect(dir)}")
+    end
   end
 
   @doc """
     Runs the pending ecto migrations
   """
-  def migrate(
-        application_name,
-        application_version,
-        ecto_repository,
+  if Code.loaded?(Ecto.Migrator) do
+    def migrate(application_name, application_version, ecto_repository, direction, migration_version \\ :all) when is_atom(direction) do
+      migrator = Ecto.Migrator
+
+      options =
+        if migration_version == :all, do: [all: true], else: [to: to_string(migration_version)]
+
+      migrator.run(
+        ecto_repository!(application_name, ecto_repository),
+        migrations_dir(application_name, application_version),
         direction,
-        migration_version \\ :all
+        options
       )
-      when is_atom(direction) do
-    options =
-      if migration_version == :all, do: [all: true], else: [to: to_string(migration_version)]
-
-    migrator = Ecto.Migrator
-
-    migrator.run(
-      ecto_repository!(application_name, ecto_repository),
-      migrations_dir(application_name, application_version),
-      direction,
-      options
-    )
+    end
+  else
+    def migrate(application_name, _application_version, ecto_repository, _direction, _migration_version \\ :all) do
+      repo = ecto_repository!(application_name, ecto_repository)
+      warning("Ecto.Migrator is not loaded, migrations cannot be run for repo=#{inspect(repo)}")
+    end
   end
 
   @doc """
@@ -314,8 +321,9 @@ defmodule Edeliver do
     end
   end
 
-  # defp info(message),    do: IO.puts "==> #{IO.ANSI.green}#{message}#{IO.ANSI.reset}"
-  defp warning(message), do: IO.puts("==> #{IO.ANSI.yellow()}#{message}#{IO.ANSI.reset()}")
+  defp warning(message) do
+    IO.puts("==> #{IO.ANSI.yellow()}#{message}#{IO.ANSI.reset()}")
+  end
 
   defp error!(message) do
     IO.puts("==> #{IO.ANSI.red()}#{message}#{IO.ANSI.reset()}")

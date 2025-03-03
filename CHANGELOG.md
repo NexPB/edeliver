@@ -1,6 +1,12 @@
 eDeliver Versions
 =================
 
+__1.9.6__
+
+  - Enhancements
+    - Elixir 1.16: `Logger.warn` and other warnings
+    - Elixir 1.17: charlists '' > ~c''
+
 __1.9.5__
 
   - Enhancements
