@@ -374,13 +374,13 @@ defmodule Mix.Tasks.Release.Version do
   @spec get_date :: String.t
   def get_date() do
     {{year, month, day}, _time} = :calendar.local_time
-    :io_lib.format('~4.10.0b~2.10.0b~2.10.0b', [year, month, day]) |> IO.iodata_to_binary
+    :io_lib.format(~c'~4.10.0b~2.10.0b~2.10.0b', [year, month, day]) |> IO.iodata_to_binary
   end
 
   @doc "Gets the current date in the form hhmmss"
   @spec get_time :: String.t
   def get_time() do
     {_date, {hour, minute, second}} = :calendar.local_time
-    :io_lib.format('~2.10.0b~2.10.0b~2.10.0b', [hour, minute, second]) |> IO.iodata_to_binary
+    :io_lib.format(~c'~2.10.0b~2.10.0b~2.10.0b', [hour, minute, second]) |> IO.iodata_to_binary
   end
 end

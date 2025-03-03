@@ -93,13 +93,15 @@ defmodule Edeliver.Relup.RunnableInstruction do
   @spec log_in_upgrade_script(type:: :error|:warning|:info|:debug, message::String.t) :: no_return
   def log_in_upgrade_script(type, message) do
     message = String.to_charlist(message)
+    
     prefix = case type do
-      :error   -> '---> X '
-      :warning -> '---> ! '
-      :info    -> '---> '
-      _        -> '----> ' # debug
+      :error   -> ~c'---> X '
+      :warning -> ~c'---> ! '
+      :info    -> ~c'---> '
+      _        -> ~c'----> ' # debug
     end
-    format_in_upgrade_script('~s~s~n', [prefix, message])
+    
+    format_in_upgrade_script(~c'~s~s~n', [prefix, message])
   end
 
   @doc """

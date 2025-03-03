@@ -38,7 +38,7 @@ defmodule Edeliver.StartupProgress do
       _node ->
         case Keyword.get(keywords, :application) do
           nil -> :ignore
-          application -> format_in_rpc_script 'Started application \'~w\'.~n', [application]
+          application -> format_in_rpc_script ~c'Started application \'~w\'.~n', [application]
         end
     end
     {:ok, state}

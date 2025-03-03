@@ -109,14 +109,15 @@ defmodule Mix.Tasks.Edeliver do
         command = command
           |> String.replace("\"", "\\\"")
           |> :binary.bin_to_list
-        'sh -c "' ++ command ++ '"'
+
+        ~c'sh -c "' ++ command ++ ~c'"'
 
       {:win32, osname} ->
         command = :binary.bin_to_list(command)
         case {System.get_env("COMSPEC"), osname} do
-          {nil, :windows} -> 'command.com /c ' ++ command
-          {nil, _}        -> 'cmd /c ' ++ command
-          {cmd, _}        -> '#{cmd} /c ' ++ command
+          {nil, :windows} -> ~c'command.com /c ' ++ command
+          {nil, _}        -> ~c'cmd /c ' ++ command
+          {cmd, _}        -> ~c'#{cmd} /c ' ++ command
         end
     end
   end
