@@ -18,6 +18,8 @@ defmodule Edeliver do
   use Application
   use GenServer
 
+  require Logger
+
   @doc """
     Starts the edeliver application
 
@@ -26,15 +28,21 @@ defmodule Edeliver do
   """
   @spec start(term, term) :: {:ok, pid}
   def start(_type, _args) do
-    import Supervisor.Spec, warn: false
-    children = [worker(__MODULE__, [], name: __MODULE__)]
-    options = [strategy: :one_for_one, name: Edeliver.Supervisor]
-    Supervisor.start_link(children, options)
+    children = [
+      __MODULE__
+    ]
+
+    Supervisor.start_link(children,
+      strategy: :one_for_one,
+      name: Edeliver.Supervisor
+    )
   end
 
   @doc "Starts this gen-server registered locally as `Edeliver`"
   @spec start_link() :: {:ok, pid}
-  def start_link(), do: GenServer.start_link(__MODULE__, [], name: __MODULE__)
+  def start_link() do
+    GenServer.start_link(__MODULE__, [], name: __MODULE__)
+  end
 
   @doc """
     Runs the edeliver command on the erlang node
@@ -113,7 +121,14 @@ defmodule Edeliver do
       # NOTE: :release_handler.which_releases/0 only works with `distillery` releases.
       # for mix releases there is apparently no `RELEASES` file
 
-      releases = :release_handler.which_releases()
+      releases =
+        if function_exported?(:release_handler, :which_releases, 0) do
+          :release_handler.which_releases()
+        else
+          Logger.warning("Could not fetch releases due to missing sasl fn `which_releases/0`")
+          []
+        end
+
       application_name = Atom.to_charlist(application_name)
 
       # Example of `releases`:

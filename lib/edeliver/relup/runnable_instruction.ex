@@ -139,7 +139,7 @@ defmodule Edeliver.Relup.RunnableInstruction do
   """
   @spec warn(message::String.t) :: no_return
   def warn(message) do
-    Logger.warn message
+    Logger.warning(message)
     log_in_upgrade_script(:warning, message)
   end
 
@@ -230,7 +230,7 @@ defmodule Edeliver.Relup.RunnableInstruction do
   defp collect_vars_from_pattern(expr) do
     {_, vars} =
       Macro.prewalk(expr, [], fn
-        {:::, _, [left, _]}, acc ->
+        {:"::", _, [left, _]}, acc ->
           {[left], acc}
         {skip, _, [_]}, acc when skip in [:^, :@] ->
           {:ok, acc}
