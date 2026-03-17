@@ -182,7 +182,7 @@ erlang_get_and_update_deps() {
       else
         echo \"rebar and rebar3 for mix was built already\"
       fi
-      APP=\"$APP\" MIX_ENV=\"$TARGET_MIX_ENV\" $MIX_CMD local.hex --force
+      APP=\"$APP\" MIX_ENV=\"$TARGET_MIX_ENV\" $MIX_CMD local.hex ${HEX_VERSION:---force} ${HEX_VERSION:+--force}
       APP=\"$APP\" MIX_ENV=\"$TARGET_MIX_ENV\" $MIX_CMD deps.get --only $TARGET_MIX_ENV
     fi
   "
