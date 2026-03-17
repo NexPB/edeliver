@@ -1,0 +1,23 @@
+libexec/erlang
+  59100024f0de5808 185
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.12",
+  "base_commit_sha": "8880fd4a8cc57c027e82a1c962e770713ae0f5ca",
+  "prompts": {
+    "59100024f0de5808": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "94633878-4750-4085-a490-943dfd500e59",
+        "model": "default"
+      },
+      "human_author": "NexPB <1289189+NexPB@users.noreply.github.com>",
+      "messages": [],
+      "total_additions": 6,
+      "total_deletions": 6,
+      "accepted_lines": 1,
+      "overriden_lines": 0
+    }
+  }
+}
