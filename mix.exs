@@ -8,7 +8,7 @@ defmodule Edeliver.Mixfile do
     [
       app: :edeliver,
       version: @version,
-      elixir: ">= 1.10.0",
+      elixir: "~> 1.15",
       elixirc_paths: elixirc_paths(),
       deps: deps(),
       docs: docs(),
